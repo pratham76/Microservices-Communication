@@ -18,22 +18,7 @@ services:
     build: ./consumer_one
     depends_on:
       - rabbitmq
-
-  consumer_two:
-    build: ./consumer_two
-    depends_on:
-      - rabbitmq
-
-  consumer_three:
-    build: ./consumer_three
-    depends_on:
-      - rabbitmq
-
-  consumer_four:
-    build: ./consumer_four
-    depends_on:
-      - rabbitmq
-
+ 
   rabbitmq:
     image: rabbitmq:3.9.7-management-alpine
     ports:

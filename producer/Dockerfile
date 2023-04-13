@@ -11,7 +11,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the source code
-COPY src/ .
+COPY producer.py .
 
 # Set the environment variables
 ENV FLASK_APP=producer.py
