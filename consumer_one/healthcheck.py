@@ -1,7 +1,8 @@
 import pika
 import time
+import logging
 
-print("hello")
+logging.basicConfig(level=logging.INFO)
 
 hostname = '172.17.0.1'
 port = 5672
@@ -28,10 +29,11 @@ channel.queue_declare(queue='health_check')
 channel.queue_bind(exchange='student_management', queue='health_check', routing_key='health_check')
 
 def callback(ch, method, properties, body):
-    print("[x] Received %r" % body)
+    logging.info("Received message: %s", body.decode())
+    ch.basic_ack(delivery_tag=method.delivery_tag)
 
 # Set up consumer to listen for messages on queue
-channel.basic_consume(queue='health_check', on_message_callback=callback, auto_ack=True)
+channel.basic_consume(queue='health_check', on_message_callback=callback)
 
 print(' [*] Waiting for health check messages. To exit press CTRL+C')
 channel.start_consuming() 
