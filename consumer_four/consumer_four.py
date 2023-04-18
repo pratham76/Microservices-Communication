@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 
 time.sleep(9)
 # Establish connection to MongoDB
-client = pymongo.MongoClient("mongodb://localhost:27017/")
+client = pymongo.MongoClient("mongodb://database")
 db = client["studentdatabase"]
 collection = db["students"]
 
@@ -41,7 +41,7 @@ def read_database_callback(ch, method, properties, body):
         logging.info("%s",document)
     ch.basic_ack(delivery_tag=method.delivery_tag)
 # Consume messages from queue
-channel.basic_consume(queue='read_database', on_message_callback=read_database_callback, auto_ack=True)
+channel.basic_consume(queue='read_database', on_message_callback=read_database_callback)
 
 # Start consuming messages
 channel.start_consuming()
