@@ -1,6 +1,18 @@
 version: '3.8'
 
-services:
+services:  
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - 'rabbitmq_data:/data'
+  database:
+    image: mongo:5.0
+    container_name: database
+    ports:
+      - "27017:27017"
   producer:
     build: ./producer
     ports:
@@ -8,9 +20,8 @@ services:
     depends_on:
       - rabbitmq
     environment:
-      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_HOST=172.17.0.1
       - RABBITMQ_PORT=5672
-      - RABBITMQ_VIRTUAL_HOST=/
       - RABBITMQ_USERNAME=guest
       - RABBITMQ_PASSWORD=guest
 
@@ -18,29 +29,13 @@ services:
     build: ./consumer_one
     depends_on:
       - rabbitmq
-
-  consumer_two:
-    build: ./consumer_two
-    depends_on:
-      - rabbitmq
-
-  consumer_three:
-    build: ./consumer_three
-    depends_on:
-      - rabbitmq
-
-  consumer_four:
-    build: ./consumer_four
-    depends_on:
-      - rabbitmq
-
-  rabbitmq:
-    image: rabbitmq:3.9.7-management-alpine
-    ports:
-      - "15672:15672"
-      - "5672:5672"
-    volumes:
-      - rabbitmq-data:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_HOST=172.17.0.1
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+  
 
 volumes:
-  rabbitmq-data:
+  rabbitmq_data:
+
