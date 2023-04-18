@@ -11,8 +11,10 @@ services:
   database:
     image: mongo:5.0
     container_name: database
+    command: mongod --bind_ip 0.0.0.0
     ports:
       - "27017:27017"
+      
   producer:
     build: ./producer
     ports:
@@ -34,8 +36,38 @@ services:
       - RABBITMQ_PORT=5672
       - RABBITMQ_USERNAME=guest
       - RABBITMQ_PASSWORD=guest
-  
-
+  consumer_two:
+    build: ./consumer_two
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_HOST=172.17.0.1
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+  consumer_three:
+    build: ./consumer_three
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_HOST=172.17.0.1
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+  consumer_four:
+    build: ./consumer_four
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_HOST=172.17.0.1
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
 volumes:
   rabbitmq_data:
-
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+          ip_range: 172.18.0.6/30

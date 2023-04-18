@@ -3,9 +3,10 @@ import json
 import time
 import pymongo
 import json
-
+import logging
+logging.basicConfig(level=logging.INFO)
 # Set up MongoDB client
-mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
+mongo_client = pymongo.MongoClient("mongodb://database")
 db = mongo_client["studentdatabase"]
 collection = db["students"]
 time.sleep(9)
@@ -36,13 +37,16 @@ def callback(ch, method, properties, body):
     name = data['name']
     srn = data['srn']
     section = data['section']
-
+    
     # Insert data into MongoDB
     student_data = {"name": name, "srn": srn, "section": section}
     collection.insert_one(student_data)
 
-    print("Data inserted into MongoDB:", student_data)
-
+    for doc in collection.find():
+         logging.info("%s",doc)
+    ch.basic_ack(delivery_tag=method.delivery_tag)
+    logging.info("Data inserted into MongoDB: %s",student_data)
+    
 channel.basic_consume(queue='insert_record', on_message_callback=callback)
 
 print('Waiting for insert record messages...')

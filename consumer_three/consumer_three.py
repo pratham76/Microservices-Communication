@@ -2,8 +2,9 @@ import pymongo
 import time
 import pika
 import json
-
-mongo_client = pymongo.MongoClient("mongodb://localhost:27017/")
+import logging
+logging.basicConfig(level=logging.INFO)
+mongo_client = pymongo.MongoClient("mongodb://database")
 db = mongo_client["studentdatabase"]
 collection = db["students"]
 
@@ -35,14 +36,14 @@ channel.queue_declare(queue='delete_record')
 
 def callback(ch, method, properties, body):
     data = json.loads(body)
-    print(f"Received delete record message: {data}")
-    
+    logging.info("Received delete record message: %s",data)
     srn = data['srn']
     if delete_student(srn):
-        print(f"Deleted record with SRN: {srn}")
+        logging.info(f"Deleted record with SRN: %s",data)
     else:
-        print(f"Record with SRN {srn} not found")
-
+        logging.info(f"Record with SRN %S not found",data)
+    ch.basic_ack(delivery_tag=method.delivery_tag)
+    
 channel.basic_consume(queue='delete_record', on_message_callback=callback)
 print('Waiting for delete record messages...')
 channel.start_consuming()
