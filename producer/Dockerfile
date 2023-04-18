@@ -20,6 +20,8 @@ ENV FLASK_ENV=production
 
 # Expose the port
 EXPOSE 5000
+EXPOSE 5672
+EXPOSE 15672
 
 # Start the server
-CMD [ "flask", "run" ]
+CMD [ "python", "producer.py" ]

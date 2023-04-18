@@ -1,21 +1,24 @@
 import pika
 from flask import Flask, request
-
+import time
+import json
 app = Flask(__name__)
 
 # RabbitMQ connection parameters
-hostname = 'rabbitmq'
+hostname = '172.17.0.1'
 port = 5672
 virtual_host = '/'
 username = 'guest'
 password = 'guest'
+print(hostname)
+time.sleep(9)
 
 # Establish connection with RabbitMQ
 credentials = pika.PlainCredentials(username, password)
 parameters = pika.ConnectionParameters(hostname,
                                        port,
                                        virtual_host,
-                                       credentials)
+                                       credentials,heartbeat=1200)
 connection = pika.BlockingConnection(parameters)
 channel = connection.channel()
 
@@ -53,11 +56,13 @@ def insert_record():
     srn = request.form.get('SRN')
     section = request.form.get('Section')
 
-    # Create message
-    message = f'{name},{srn},{section}'
+    message = {'name': name, 'srn': srn, 'section': section}
+
+    # Convert message to a JSON string
+    message_str = json.dumps(message)
 
     # Send message to RabbitMQ
-    channel.basic_publish(exchange='student_management', routing_key='insert_record', body=message)
+    channel.basic_publish(exchange='student_management', routing_key='insert_record', body=message_str)
     return f'Record for SRN {srn} added to RabbitMQ'
 
 
@@ -74,10 +79,10 @@ def delete_record():
     srn = request.args.get('SRN')
 
     # Create message
-    message = f'{srn}'
-
+    message ={'srn':srn}
+    message_str = json.dumps(message)
     # Send message to RabbitMQ
-    channel.basic_publish(exchange='student_management', routing_key='delete_record', body=message)
+    channel.basic_publish(exchange='student_management', routing_key='delete_record', body=message_str)
     return f'Record for SRN {srn} deleted from RabbitMQ'
 
 

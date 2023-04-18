@@ -9,15 +9,20 @@ COPY requirements.txt .
 
 # Install the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install Flask
-ENV PATH=$PATH:/usr/local/bin
+
+# Install flask
+RUN pip install flask
 
 # Copy the healthcheck.py file
 COPY healthcheck.py .
 
+ENV FLASK_APP=healthcheck.py
+ENV FLASK_RUN_HOST=0.0.0.0
+ENV FLASK_ENV=production
 # Set the environment variable
 ENV HEALTH_CHECK_URL=http://producer:5000/health_check
 
 # Run the healthcheck script
 CMD ["python", "healthcheck.py"]
+
 
