@@ -23,9 +23,9 @@ to build the project(provide u have docker installed and set up inyour system) u
 docker-compose up --build
 
 for healthcheck functionality: curl http://localhost:5000/health_check
-for insert functionality: curl -X POST -d "Name=<NAME>&SRN=<SRN>&Section=<SECTION>" http://localhost:5000/insert_record
+for insert functionality: curl -X POST -d "Name=NAME&SRN=SRN&Section=SECTION" http://localhost:5000/insert_record
 for display records functionality: curl http://localhost:5000/read_database
-for delete functionality: curl http://localhost:5000/delete_record?SRN=<SRN>
+for delete functionality: curl http://localhost:5000/delete_record?SRN=SRN
 
 alternatively to stop it use
 
