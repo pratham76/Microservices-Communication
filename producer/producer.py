@@ -51,7 +51,7 @@ def health_check():
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     message = f'Student management system health check at {timestamp}'
     channel.basic_publish(exchange='student_management', routing_key='health_check', body=message)
-    return 'Health check message piblished to RabbitMQ\n'
+    return 'Health check message published to RabbitMQ\n'
 
 
 @app.route('/insert_record', methods=['POST'])
