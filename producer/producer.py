@@ -2,6 +2,8 @@ import pika
 from flask import Flask, request
 import time
 import json
+import datetime
+
 app = Flask(__name__)
 
 # RabbitMQ connection parameters
@@ -42,11 +44,14 @@ channel.queue_declare(queue='delete_record')
 channel.queue_bind(exchange='student_management', queue='delete_record', routing_key='delete_record')
 
 
+
 @app.route('/health_check', methods=['GET'])
 def health_check():
     # Send health check message to RabbitMQ
-    channel.basic_publish(exchange='student_management', routing_key='health_check', body='RabbitMQ health check')
-    return 'Health check message sent to RabbitMQ'
+    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    message = f'Student management system health check at {timestamp}'
+    channel.basic_publish(exchange='student_management', routing_key='health_check', body=message)
+    return 'Health check message piblished to RabbitMQ\n'
 
 
 @app.route('/insert_record', methods=['POST'])
@@ -63,14 +68,14 @@ def insert_record():
 
     # Send message to RabbitMQ
     channel.basic_publish(exchange='student_management', routing_key='insert_record', body=message_str)
-    return f'Record for SRN {srn} added to RabbitMQ'
+    return f'insertion request of record for SRN {srn} added to RabbitMQ\n'
 
 
 @app.route('/read_database', methods=['GET'])
 def read_database():
     # Send message to RabbitMQ
     channel.basic_publish(exchange='student_management', routing_key='read_database', body='Read database')
-    return 'Read database message sent to RabbitMQ'
+    return 'Read database request message sent to RabbitMQ\n'
 
 
 @app.route('/delete_record', methods=['GET'])
@@ -83,7 +88,7 @@ def delete_record():
     message_str = json.dumps(message)
     # Send message to RabbitMQ
     channel.basic_publish(exchange='student_management', routing_key='delete_record', body=message_str)
-    return f'Record for SRN {srn} deleted from RabbitMQ'
+    return f'deletion request og record for SRN {srn} added to  RabbitMQ\n'
 
 
 if __name__ == '__main__':
